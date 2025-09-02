@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import datetime
 import numpy as np
 
-def trainModel(data,input_date):
-    
+def generatePrediction(input_date):
+    data = pd.read_csv('Nat_Gas.csv')
     working_df = data.copy()
     days = []
     for row in working_df.itertuples():
@@ -31,7 +31,7 @@ def trainModel(data,input_date):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv('Nat_Gas.csv')
 
-    prediction = trainModel(data,input('Enter a date to Predict a Price for (mm/dd/yy): '))
+
+    prediction = generatePrediction(input('Enter a date to Predict a Price for (mm/dd/yy): '))
     print(f'Price Prediction is: ${prediction}')
