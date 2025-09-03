@@ -9,7 +9,7 @@
 from commodity_storage_pricer import generatePrediction #to be able to price the purchase price of natural gas at any given point
 from datetime import datetime
 
-def commodityPricingModel(inj_dates,wd_dates,max_volume,storage_costs,inj_amount_arr,wd_amount_arr):
+def commodityPricingModel(inj_dates,wd_dates,max_volume,storage_costs,inj_amount_arr,wd_amount_arr,transaction_cost_arr):
     total_inj_cost = 0
     remaining_vol = max_volume
 
@@ -49,24 +49,39 @@ def commodityPricingModel(inj_dates,wd_dates,max_volume,storage_costs,inj_amount
     negated_wd_arr = [x*-1 for x in wd_amount_arr]
     all_dates = inj_dates+wd_dates
     all_movements = inj_amount_arr+negated_wd_arr
+    volume_stored = all_movements[0]
 
     for i in range(len(all_dates)-1):
         months_between = getMonthsBetween(all_dates[i],all_dates[i+1])
+        total_storage_costs += volume_stored*months_between*storage_costs
+        volume_stored+=all_movements[i+1]
+
+    total_transaction_costs = len(all_movements)*sum(transaction_cost_arr)
+
+    total_costs = total_inj_cost+total_storage_costs+total_transaction_costs
+    total_profit = total_sell_price-total_costs
+    return total_profit
         
 
 def getMonthsBetween(date_1,date_2):
-    format = '%m/%d/%y'
-    d1 = datetime.
+    date_format = '%m/%d/%y'
+    d1 = datetime.strptime(date_1,date_format)
+    d2 = datetime.strptime(date_2,date_format)
+
+    d1_tm = d1.year*12+d1.month
+    d2_tm = d2.year*12+d2.month
+
+    return abs(d2_tm-d1_tm)
     
-        
-
-
+    
 if __name__ == '__main__':
-    inj_dates = ['11/20/21','6/4/23']
-    wd_dates = ['8/27/24']
+    inj_dates = ['10/20/23','11/4/23']
+    wd_dates = ['4/27/24']
     max_storage_volume = 1000 #units
-    storage_costs = 2 #cost per unit
-    inj_amount_arr = [500,200]
+    storage_costs = 0.01 #cost per unit
+    inj_amount_arr = [500,200] 
     wd_amount_arr = [700]
+    transaction_cost_arr = [0.05,0.1,0.3] #list of costs that are made everytime a withdrawal or injection is made
 
-    commodityPricingModel(inj_dates,wd_dates,max_storage_volume,storage_costs,inj_amount_arr,wd_amount_arr)
+    contract_value = commodityPricingModel(inj_dates,wd_dates,max_storage_volume,storage_costs,inj_amount_arr,wd_amount_arr,transaction_cost_arr)
+    print(f'The Contract Value is: ${round(contract_value,3)}')

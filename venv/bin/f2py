@@ -1,4 +1,4 @@
-#!/Users/gabrielbridger/gitFolders/code/python/projects/JPmorgan-job-sim/venv/bin/python3.11
+#!/Users/gabrielbridger/gitFolders/jpmorgan-job-sim/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys
